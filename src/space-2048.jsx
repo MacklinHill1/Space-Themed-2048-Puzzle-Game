@@ -175,7 +175,7 @@ const Space2048 = () => {
           move('down');
           break;
           // Move with WASD
-          case 'A':
+        case 'A':
           move('left');
           break;
         case 'D':

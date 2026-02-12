@@ -157,7 +157,7 @@ const Space2048 = () => {
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'W', 'A', 'S', 'D'].includes(e.key)) {
         e.preventDefault();
       }
       
@@ -172,6 +172,19 @@ const Space2048 = () => {
           move('up');
           break;
         case 'ArrowDown':
+          move('down');
+          break;
+          // Move with WASD
+          case 'A':
+          move('left');
+          break;
+        case 'D':
+          move('right');
+          break;
+        case 'W':
+          move('up');
+          break;
+        case 'S':
           move('down');
           break;
         default:
@@ -445,7 +458,7 @@ const Space2048 = () => {
         maxWidth: '400px'
       }}>
         <p style={{ margin: '5px 0' }}>
-          <strong>Desktop:</strong> Use arrow keys to move tiles
+          <strong>Desktop:</strong> Use arrow keys or WASD to move tiles
         </p>
         <p style={{ margin: '5px 0' }}>
           <strong>Mobile:</strong> Swipe in any direction

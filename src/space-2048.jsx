@@ -22,28 +22,9 @@ const Space2048 = () => {
   const [bestScore, setBestScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
-  const [animate, setAnimate] = useState({});
-
-  // Initialize game
-  const initializeGame = useCallback(() => {
-    const newGrid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
-    addNewTile(newGrid);
-    addNewTile(newGrid);
-    setGrid(newGrid);
-    setScore(0);
-    setGameOver(false);
-    setWon(false);
-    setAnimate({});
-  }, []);
-
-  useEffect(() => {
-    initializeGame();
-    const savedBest = localStorage.getItem('space2048Best');
-    if (savedBest) setBestScore(parseInt(savedBest));
-  }, [initializeGame]);
 
   // Add a new tile (90% chance of 2, 10% chance of 4)
-  const addNewTile = (currentGrid) => {
+  const addNewTile = useCallback((currentGrid) => {
     const emptyCells = [];
     for (let i = 0; i < GRID_SIZE; i++) {
       for (let j = 0; j < GRID_SIZE; j++) {
@@ -56,10 +37,27 @@ const Space2048 = () => {
       const { row, col } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
       currentGrid[row][col] = Math.random() < 0.9 ? 2 : 4;
     }
-  };
+  }, []);
+
+  // Initialize game
+  const initializeGame = useCallback(() => {
+    const newGrid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
+    addNewTile(newGrid);
+    addNewTile(newGrid);
+    setGrid(newGrid);
+    setScore(0);
+    setGameOver(false);
+    setWon(false);
+  }, [addNewTile]);
+
+  useEffect(() => {
+    initializeGame();
+    const savedBest = localStorage.getItem('space2048Best');
+    if (savedBest) setBestScore(parseInt(savedBest));
+  }, [initializeGame]);
 
   // Check if any moves are possible
-  const canMove = (currentGrid) => {
+  const canMove = useCallback((currentGrid) => {
     // Check for empty cells
     for (let i = 0; i < GRID_SIZE; i++) {
       for (let j = 0; j < GRID_SIZE; j++) {
@@ -75,16 +73,15 @@ const Space2048 = () => {
       }
     }
     return false;
-  };
+  }, []);
 
   // Move and merge logic
-  const move = (direction) => {
+  const move = useCallback((direction) => {
     if (gameOver || won) return;
 
     let newGrid = grid.map(row => [...row]);
     let moved = false;
     let newScore = score;
-    const mergeAnimations = {};
 
     const slide = (row) => {
       const arr = row.filter(val => val !== 0);
@@ -155,7 +152,7 @@ const Space2048 = () => {
         setGameOver(true);
       }
     }
-  };
+  }, [grid, gameOver, won, score, bestScore, addNewTile, canMove]);
 
   // Keyboard controls
   useEffect(() => {
@@ -184,7 +181,7 @@ const Space2048 = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [grid, gameOver, won, score, bestScore]);
+  }, [move]);
 
   // Touch controls
   const [touchStart, setTouchStart] = useState(null);

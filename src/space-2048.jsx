@@ -157,6 +157,7 @@ const Space2048 = () => {
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e) => {
+      const key = e.key.toUpperCase()
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'W', 'A', 'S', 'D'].includes(e.key)) {
         e.preventDefault();
       }

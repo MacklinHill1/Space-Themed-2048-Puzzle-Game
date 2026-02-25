@@ -197,7 +197,7 @@ const Space2048 = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [move]);
 
-  // Touch controls
+  // Touch controls for mobile
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 

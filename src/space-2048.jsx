@@ -157,11 +157,10 @@ const Space2048 = () => {
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const key = e.key.toUpperCase()
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'W', 'A', 'S', 'D'].includes(e.key)) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'W', 'A', 'S', 'D', 'w', 'a', 's', 'd'].includes(e.key)) {
         e.preventDefault();
       }
-      
+      // Move with arrow keys
       switch (e.key) {
         case 'ArrowLeft':
           move('left');

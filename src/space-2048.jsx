@@ -187,6 +187,18 @@ const Space2048 = () => {
         case 'S':
           move('down');
           break;
+          case 'a':
+          move('left');
+          break;
+        case 'd':
+          move('right');
+          break;
+        case 'w':
+          move('up');
+          break;
+        case 's':
+          move('down');
+          break;
         default:
           break;
       }
@@ -267,6 +279,8 @@ const Space2048 = () => {
     }}>
       {/* Header */}
       <div style={{ marginBottom: '30px', textAlign: 'center' }}>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3489667570786800"
+     crossorigin="anonymous"></script>
         <h1 style={{
           fontSize: '3.5rem',
           margin: '0 0 10px 0',

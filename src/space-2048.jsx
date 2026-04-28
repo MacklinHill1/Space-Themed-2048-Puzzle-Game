@@ -120,7 +120,6 @@ const Modal = ({ title, onClose, children }) => (
 // ─── Game Component (core logic unchanged) ────────────────────────────────────
 const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
   const [grid, setGrid] = useState([]);
-  const [score, setScore] = useState(0);
 
   const addNewTile = useCallback((g) => {
     const empty = [];
@@ -133,10 +132,13 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
     }
   }, []);
 
+  const scoreRef = useRef(0);
+
   const initializeGame = useCallback(() => {
     const g = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
     addNewTile(g); addNewTile(g);
-    setGrid(g); setScore(0);
+    scoreRef.current = 0;
+    setGrid(g);
     onScoreUpdate(0);
   }, [addNewTile, onScoreUpdate]);
 
@@ -202,11 +204,8 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
 
       if (moved) {
         addNewTile(newGrid);
-        setScore(prev => {
-          const ns = prev + added;
-          onScoreUpdate(ns);
-          return ns;
-        });
+        scoreRef.current += added;
+        onScoreUpdate(scoreRef.current);
         if (!canMove(newGrid)) onGameOver();
         return newGrid;
       }

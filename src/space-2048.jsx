@@ -26,7 +26,7 @@ const TILE_COLORS = {
 // ─── SEO Helmet ──────────────────────────────────────────────────────────────
 const SEOHead = () => {
   useEffect(() => {
-    document.title = 'Space 2048 — Merge Cosmic Objects';
+    document.title = 'Space 2048 — Merge Cosmic Objects & Reach the Universe';
   }, []);
   return null;
 };
@@ -62,7 +62,7 @@ const Modal = ({ title, onClose, children }) => (
   </div>
 );
 
-// ─── Game Board Component (100% ORIGINAL MERGE LOGIC) ──────────────────────
+// ─── Game Board Component ──────────────────────
 const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
   const [grid, setGrid] = useState([]);
   const [score, setScore] = useState(0);
@@ -70,7 +70,6 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
 
-  // Add a new tile
   const addNewTile = useCallback((currentGrid) => {
     const emptyCells = [];
     for (let i = 0; i < GRID_SIZE; i++)
@@ -82,7 +81,6 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
     }
   }, []);
 
-  // Initialize game
   const initializeGame = useCallback(() => {
     const newGrid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
     addNewTile(newGrid);
@@ -117,7 +115,6 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
 
   const move = useCallback((direction) => {
     if (gameOver || won) return;
-
     let newGrid = grid.map(row => [...row]);
     let moved = false;
     let newScore = score;
@@ -187,8 +184,8 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const keys = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', W: 'up', S: 'down', A: 'left', D: 'right', w: 'up', s: 'down', a: 'left', d: 'right' };
-      if (keys[e.key]) { e.preventDefault(); move(keys[e.key]); }
+      const keys = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', s: 'down', a: 'left', d: 'right' };
+      if (keys[e.key.toLowerCase()]) { e.preventDefault(); move(keys[e.key.toLowerCase()]); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -270,6 +267,9 @@ export default function Space2048App() {
     }}>{label}</button>
   );
 
+  const sectionHeading = { color: '#c4b5fd', borderBottom: '1px solid rgba(196, 181, 253, 0.2)', paddingBottom: '8px', marginBottom: '16px' };
+  const proseStyle = { lineHeight: '1.8', color: '#94a3b8' };
+
   return (
     <div style={{ minHeight: '100vh', background: '#070714', color: '#e2e8f0', fontFamily: 'system-ui, sans-serif' }}>
       <SEOHead />
@@ -277,7 +277,7 @@ export default function Space2048App() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 onClick={() => setActivePage('Game')} style={{ cursor: 'pointer', margin: 0, color: '#a78bfa', fontSize: '1.4rem' }}>🌠 Space 2048</h2>
           <nav style={{ display: 'flex', gap: '5px' }}>
-            {['Game', 'Leaderboard', 'About'].map(p => (
+            {['Game', 'Tips', 'Leaderboard', 'About'].map(p => (
               <button key={p} onClick={() => { setActivePage(p); window.scrollTo(0,0); }} style={navStyle(p)}>{p}</button>
             ))}
           </nav>
@@ -302,50 +302,123 @@ export default function Space2048App() {
                 {btn('How to Play', () => setShowHowToPlay(true), 'secondary')}
               </div>
               <GameBoard onScoreUpdate={handleScoreUpdate} onGameOver={() => setShowNamePrompt(true)} onWin={() => {}} resetSignal={resetSignal} />
-              <AdPlaceholder slot="Below Game" style={{ width: '100%', height: '90px', marginTop: '20px' }} />
+              
+              <div style={{ width: '100%', maxWidth: '800px', marginTop: '40px', padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
+                <h3 style={sectionHeading}>Cosmic Info</h3>
+                <p style={proseStyle}>
+                  Space 2048 is a educational and entertaining journey through the celestial hierarchy. Starting with small <strong>Asteroids</strong>, users leverage strategic sliding to merge objects until they encompass a whole <strong>Universe</strong>. This game is built entirely in React and operates locally on your machine for maximum performance.
+                </p>
+                <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+                  <button onClick={() => setActivePage('Privacy')} style={{ background: 'none', border: 'none', color: '#a78bfa', cursor: 'pointer', textDecoration: 'underline' }}>Privacy Policy</button>
+                  <button onClick={() => setActivePage('TOS')} style={{ background: 'none', border: 'none', color: '#a78bfa', cursor: 'pointer', textDecoration: 'underline' }}>Terms of Service</button>
+                </div>
+              </div>
+           </div>
+        ) : activePage === 'Tips' ? (
+           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+              <h2 style={{ textAlign: 'center', color: '#c4b5fd', marginBottom: '32px' }}>Strategy Guide</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '12px' }}>
+                  <h3 style={{ color: '#fbbf24' }}>📐 The Corner Strategy</h3>
+                  <p style={proseStyle}>Pick a corner (usually bottom-left or bottom-right) and keep your highest value tile locked there. Never press the direction that moves it out of that corner unless absolutely necessary.</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '12px' }}>
+                  <h3 style={{ color: '#fbbf24' }}>🐍 The Snake Method</h3>
+                  <p style={proseStyle}>Build your tiles in a descending order like a snake. For example: [1024][512][256][128]. This allows for chain merges that clear the board quickly.</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '12px' }}>
+                  <h3 style={{ color: '#fbbf24' }}>🚫 Pick Three Directions</h3>
+                  <p style={proseStyle}>Try to only use three movement keys. If you are anchoring tiles at the bottom, only use Left, Right, and Down. Using "Up" might trap small tiles behind large ones.</p>
+                </div>
+              </div>
            </div>
         ) : activePage === 'Leaderboard' ? (
            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-             <h2 style={{ textAlign: 'center', color: '#c4b5fd' }}>Leaderboard</h2>
-             {leaderboard.map((e, i) => (
-               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', padding: '15px', marginBottom: '8px', borderRadius: '10px' }}>
-                 <span>{i + 1}. {e.name}</span>
-                 <span style={{ fontWeight: 'bold', color: '#a78bfa' }}>{e.score.toLocaleString()}</span>
+             <h2 style={{ textAlign: 'center', color: '#c4b5fd' }}>Galactic High Scores</h2>
+             {leaderboard.length === 0 ? <p style={{textAlign: 'center', color: '#64748b'}}>No missions logged yet. Be the first!</p> :
+              leaderboard.map((e, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', padding: '15px', marginBottom: '8px', borderRadius: '10px' }}>
+                  <span>{i + 1}. {e.name}</span>
+                  <span style={{ fontWeight: 'bold', color: '#a78bfa' }}>{e.score.toLocaleString()}</span>
+                </div>
+              ))
+             }
+           </div>
+        ) : activePage === 'About' ? (
+           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+             <h2 style={{color: '#c4b5fd', textAlign: 'center', marginBottom: '24px'}}>About Space 2048</h2>
+             <div style={{background: 'rgba(255,255,255,0.03)', padding: '30px', borderRadius: '16px'}}>
+               <h3 style={sectionHeading}>The Mission</h3>
+               <p style={proseStyle}>Space 2048 was designed to merge the addictive logic of numerical puzzles with the awe-inspiring scale of our universe. Every tile represents a leap in mass and complexity—from rocky debris to the fundamental building blocks of existence.</p>
+               
+               <h3 style={sectionHeading}>Meet the Cosmic Objects</h3>
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginTop: '20px' }}>
+                 {Object.entries(SPACE_TILES).map(([val, {emoji, name}]) => (
+                   <div key={val} style={{ textAlign: 'center', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+                     <div style={{fontSize: '1.5rem'}}>{emoji}</div>
+                     <div style={{fontSize: '0.8rem', fontWeight: 'bold', marginTop: '5px'}}>{name}</div>
+                     <div style={{fontSize: '0.7rem', color: '#64748b'}}>{val}</div>
+                   </div>
+                 ))}
                </div>
-             ))}
+             </div>
            </div>
+        ) : activePage === 'Privacy' ? (
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <h2 style={sectionHeading}>Privacy Policy</h2>
+            <p style={proseStyle}>
+              Your privacy is paramount. Space 2048 is a client-side application.
+              <br/><br/>
+              • <strong>Data Storage:</strong> All game data, high scores, and leaderboard entries are stored locally on your device using <code>localStorage</code>. We do not transmit this data to any external servers.
+              <br/>• <strong>Cookies:</strong> This site does not use tracking cookies.
+              <br/>• <strong>Third-Party Ads:</strong> If ads are present, they may collect anonymous data as per the provider's policy.
+            </p>
+            {btn('Back to Game', () => setActivePage('Game'), 'secondary')}
+          </div>
         ) : (
-           <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
-             <h2 style={{color: '#c4b5fd'}}>About Space 2048</h2>
-             <p style={{lineHeight: '1.6', color: '#94a3b8'}}>Merge objects from Asteroids to galaxies until you encompass the entire Universe.</p>
-           </div>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <h2 style={sectionHeading}>Terms of Service</h2>
+            <p style={proseStyle}>
+              By playing Space 2048, you agree to the following:
+              <br/><br/>
+              1. <strong>Usage:</strong> This game is provided "as is" for entertainment purposes.
+              <br/>2. <strong>Intellectual Property:</strong> All cosmic assets and code are property of the game creator. The core gameplay mechanic is inspired by the open-source 2048 by Gabriele Cirulli.
+              <br/>3. <strong>Fair Play:</strong> Users are encouraged to achieve scores through legitimate gameplay.
+            </p>
+            {btn('Back to Game', () => setActivePage('Game'), 'secondary')}
+          </div>
         )}
       </main>
 
       {showHowToPlay && (
-        <Modal title="How to Play" onClose={() => setShowHowToPlay(false)}>
+        <Modal title="How to Play 🚀" onClose={() => setShowHowToPlay(false)}>
           <div style={{color: '#94a3b8', lineHeight: '1.8'}}>
-            <p>🎯 Merge tiles to reach the Universe (2048)!</p>
-            <p>⬅️ Use Arrow keys / WASD or Swipe.</p>
-            <p>✨ Matching tiles combine into one with double value.</p>
+            <p><strong>Step 1:</strong> Use your <strong>Arrow Keys</strong>, <strong>WASD</strong>, or <strong>Swipe</strong> to move all cosmic objects in a direction.</p>
+            <p><strong>Step 2:</strong> When two identical objects collide, they merge! 🪨 + 🪨 = 🌑.</p>
+            <p><strong>Step 3:</strong> Keep merging until you reach the 🌠 <strong>Universe (2048)</strong>.</p>
+            <p><strong>Step 4:</strong> If the board fills up and you can't move, the mission ends.</p>
+            <div style={{marginTop: '20px', padding: '15px', background: 'rgba(124, 58, 237, 0.1)', borderRadius: '10px'}}>
+              <strong>Tip:</strong> Try to keep your most massive object in one of the corners!
+            </div>
           </div>
         </Modal>
       )}
 
       {showNamePrompt && (
-        <Modal title="🏆 New High Score!" onClose={() => setShowNamePrompt(false)}>
-          <p style={{color: '#94a3b8'}}>You scored {score.toLocaleString()} points!</p>
-          <input id="nameIn" placeholder="Enter your name" style={{ width: '100%', padding: '12px', background: '#000', color: '#fff', border: '1px solid #444', borderRadius: '8px', marginBottom: '16px' }} />
-          {btn('Save Score', () => saveToLeaderboard(document.getElementById('nameIn').value))}
+        <Modal title="🏆 Save Your Legacy" onClose={() => setShowNamePrompt(false)}>
+          <p style={{color: '#94a3b8'}}>You scored {score.toLocaleString()} points! Enter your name to be remembered in the stars.</p>
+          <input id="nameIn" placeholder="Enter Pilot Name" maxLength="15" style={{ width: '100%', padding: '12px', background: '#000', color: '#fff', border: '1px solid #444', borderRadius: '8px', marginBottom: '16px', outline: 'none' }} />
+          {btn('Submit Score', () => saveToLeaderboard(document.getElementById('nameIn').value))}
         </Modal>
       )}
 
       <footer style={{ textAlign: 'center', padding: '40px', borderTop: '1px solid #2d2d4a', opacity: 0.6, fontSize: '0.8rem' }}>
-        <p>© {new Date().getFullYear()} Space 2048.</p>
+        <p>© {new Date().getFullYear()} Space 2048 • Built for Cosmic Explorers</p>
       </footer>
 
       <style>{`
         @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        input:focus { border-color: #a78bfa !important; }
       `}</style>
     </div>
   );

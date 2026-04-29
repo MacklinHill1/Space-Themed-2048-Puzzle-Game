@@ -303,6 +303,8 @@ export default function Space2048App() {
               </div>
               <GameBoard onScoreUpdate={handleScoreUpdate} onGameOver={() => setShowNamePrompt(true)} onWin={() => {}} resetSignal={resetSignal} />
               
+              <AdPlaceholder slot="Game_Footer" style={{ width: '100%', height: '90px', marginTop: '20px' }} />
+
               <div style={{ width: '100%', maxWidth: '800px', marginTop: '40px', padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
                 <h3 style={sectionHeading}>Cosmic Info</h3>
                 <p style={proseStyle}>
@@ -331,6 +333,7 @@ export default function Space2048App() {
                   <p style={proseStyle}>Try to only use three movement keys. If you are anchoring tiles at the bottom, only use Left, Right, and Down. Using "Up" might trap small tiles behind large ones.</p>
                 </div>
               </div>
+              <AdPlaceholder slot="Tips_Bottom" style={{ width: '100%', height: '60px', marginTop: '30px' }} />
            </div>
         ) : activePage === 'Leaderboard' ? (
            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -343,6 +346,7 @@ export default function Space2048App() {
                 </div>
               ))
              }
+             <AdPlaceholder slot="Leaderboard_Bottom" style={{ width: '100%', height: '60px', marginTop: '30px' }} />
            </div>
         ) : activePage === 'About' ? (
            <div style={{ maxWidth: '800px', margin: '0 auto' }}>

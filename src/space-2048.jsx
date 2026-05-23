@@ -446,13 +446,13 @@ const RocketArena = ({ onScoreUpdate }) => {
   const stateRef = useRef(null);
   const animRef = useRef(null);
   const [uiScore, setUiScore] = useState(0);
-  const [uiHealth, setUiHealth] = useState(100);
+  const [, setUiHealth] = useState(100);
   const [uiLevel, setUiLevel] = useState(1);
   const [uiGameOver, setUiGameOver] = useState(false);
   const [uiWave, setUiWave] = useState(1);
   const [uiPowerup, setUiPowerup] = useState('');
   const [uiKills, setUiKills] = useState(0);
-  const [uiXP, setUiXP] = useState({current:0, next:100});
+  const [, setUiXP] = useState({current:0, next:100});
   const [gameStarted, setGameStarted] = useState(false);
   const keysRef = useRef({});
   const mouseRef = useRef({x:0,y:0,down:false});
@@ -1188,8 +1188,8 @@ const CookiePage = () => (
 // ═══════════════════════════════════════════════════════════════
 export default function AsterNova() {
   const [page, setPage] = useState('Home');
-  const [score, setScore] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [, setScore] = useState(0);
+  const [, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const titles = {

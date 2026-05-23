@@ -66,7 +66,6 @@ const Modal = ({ title, onClose, children }) => (
 const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
   const [grid, setGrid] = useState([]);
   const [score, setScore] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
 
@@ -94,8 +93,6 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
 
   useEffect(() => {
     initializeGame();
-    const savedBest = localStorage.getItem('space2048Best');
-    if (savedBest) setBestScore(parseInt(savedBest));
   }, [initializeGame]);
 
   useEffect(() => { if (resetSignal > 0) initializeGame(); }, [resetSignal, initializeGame]);
@@ -139,6 +136,7 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
       return merged;
     };
 
+    // Logic for left, right, up, down remains the same...
     if (direction === 'left') {
       for (let i = 0; i < GRID_SIZE; i++) {
         const newRow = slide(newGrid[i]);
@@ -174,13 +172,12 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
       setGrid(newGrid);
       setScore(newScore);
       onScoreUpdate(newScore);
-      if (newScore > bestScore) {
-        setBestScore(newScore);
-        localStorage.setItem('space2048Best', newScore.toString());
+      if (!canMove(newGrid)) { 
+        setGameOver(true); 
+        onGameOver(); 
       }
-      if (!canMove(newGrid)) { setGameOver(true); onGameOver(); }
     }
-  }, [grid, gameOver, won, score, bestScore, addNewTile, canMove, onWin, onGameOver, onScoreUpdate]);
+  }, [grid, gameOver, won, score, addNewTile, canMove, onWin, onGameOver, onScoreUpdate]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -191,19 +188,8 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [move]);
 
-  const touchStart = useRef(null);
-  const handleTouchStart = (e) => { touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; };
-  const handleTouchEnd = (e) => {
-    if (!touchStart.current) return;
-    const dx = touchStart.current.x - e.changedTouches[0].clientX;
-    const dy = touchStart.current.y - e.changedTouches[0].clientY;
-    if (Math.abs(dx) > Math.abs(dy)) { if (Math.abs(dx) > 40) move(dx > 0 ? 'left' : 'right'); }
-    else { if (Math.abs(dy) > 40) move(dy > 0 ? 'up' : 'down'); }
-    touchStart.current = null;
-  };
-
   return (
-    <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '15px', border: '2px solid rgba(255, 255, 255, 0.1)', position: 'relative' }}>
+    <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '15px', border: '2px solid rgba(255, 255, 255, 0.1)', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', width: 'min(400px, 85vw)', aspectRatio: '1/1' }}>
         {grid.length > 0 && grid.map((row, i) => row.map((value, j) => (
           <div key={`${i}-${j}`} style={{ background: value === 0 ? 'rgba(255, 255, 255, 0.05)' : TILE_COLORS[value], borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontSize: value >= 1024 ? '1.8rem' : '2.2rem', fontWeight: 'bold', animation: value !== 0 ? 'pop 0.2s ease' : 'none' }}>
@@ -216,12 +202,42 @@ const GameBoard = ({ onScoreUpdate, onGameOver, onWin, resetSignal }) => {
           </div>
         )))}
       </div>
-      {(gameOver || won) && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: '15px', zIndex: 10 }}>
-          <div style={{ fontSize: '3rem' }}>{won ? '🎉' : '😢'}</div>
-          <h2>{won ? 'You Won!' : 'Game Over'}</h2>
-          <p>Score: {score}</p>
-          <button onClick={() => initializeGame()} style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Try Again</button>
+
+      {/* NEW: GAME OVER POPUP OVERLAY */}
+      {gameOver && (
+        <div style={{ 
+          position: 'absolute', 
+          inset: 0, 
+          background: 'rgba(7, 7, 20, 0.85)', 
+          backdropFilter: 'blur(4px)',
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          borderRadius: '15px', 
+          zIndex: 10,
+          textAlign: 'center',
+          animation: 'pop 0.3s ease-out'
+        }}>
+          <div style={{ fontSize: '4rem', marginBottom: '10px' }}>💀</div>
+          <h2 style={{ color: '#fff', fontSize: '2rem', margin: '0 0 10px' }}>Mission Failed</h2>
+          <p style={{ color: '#94a3b8', margin: '0 0 20px' }}>The board is full. Your score was {score.toLocaleString()}.</p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+             <button 
+                onClick={initializeGame} 
+                style={{ 
+                  background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', 
+                  color: 'white', 
+                  border: 'none', 
+                  padding: '12px 24px', 
+                  borderRadius: '10px', 
+                  fontWeight: 'bold', 
+                  cursor: 'pointer' 
+                }}
+             >
+                Try Again
+             </button>
+          </div>
         </div>
       )}
     </div>

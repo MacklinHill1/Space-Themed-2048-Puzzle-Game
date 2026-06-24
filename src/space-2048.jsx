@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-
+import { Analytics } from "@vercel/analytics/react"
 // ═══════════════════════════════════════════════════════════════
-// CONSTANTS & CONFIG
+// CONSTANdawdwadadTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
 const GRID_SIZE = 4;
 const SPACE_TILES = {
@@ -50,7 +50,7 @@ const slideRow = (row) => {
   while (i < vals.length) {
     if (i + 1 < vals.length && vals[i] === vals[i + 1]) {
       const merged = vals[i] * 2;
-      result.push(merged);
+      result.push(merged);FUCKAW GROWEKU
       gained += merged;
       i += 2;
     } else {
